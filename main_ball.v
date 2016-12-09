@@ -1,33 +1,372 @@
-module main (mled_left, mled_right, mled_equal, mbcd_segment, min_hex_joy);
+module main (vcc, gnd, mled_left, mled_right, mled_equal, mbcd_segment, min_hex_joy);
 
 //Not finished @091259 0130
   output [4:0]mled_left,mled_right;
-  output mled_equal;
-  output [2:0]mbcd_segment;
+  output mled_equal, vcc, gnd;
+  output [3:0]mbcd_segment;
   input [7:0]min_hex_joy;
 
-  wire [4:0]wbcd_left, wbcd_right, wbcd_segment;
-  wire wtog_equal;
-  wire [2:0]wstate;
-  wire wtrigger;
+  wire [3:0]wo_bcd_left, wo_bcd_right, wo_bcd_segment, wo_ans;
+  wire wo_tog_equal;
+  wire [3:0]wo_state;
+  wire inw_trigger;
+
+  wire wo_ret_score_p1, wo_ret_score_p2;
+
+  wire [3:0]w_anssel;
+  wire [1:0]w_player;
+
+  reg vcc, gnd;
+
+//Global Pin for extranal
+  always @ ( 1 ) begin
+    vcc <= 1;
+    gnd <= 0;
+  end
 
 
   //starting state with zero
-  click_count_up cup(wstate, wtrigger);
+  click_count_up cup(wo_state, inw_trigger);
 
   //initial question
-  //module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, ans, state);
-  question_inti q1(wbcd_left, wbcd_right, wtog_equal, wbcd_segment, wans, wstate);
+  //module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, bcd_ans, state);
+  question_inti q1(wo_bcd_left, wo_bcd_right, wo_tog_equal, wo_bcd_segment, wo_ans, wo_state);
 
   //Show question in display
   //module question_show (led_left, led_right, led_equal, bcd_segment, in_left, in_right, in_equal, in_segment);
-  question_show qs1(mled_left, mled_right, mled_equal, mbcd_segment, wbcd_left, wbcd_right, wtog_equal, wbcd_segment);
+  question_show qs1(mled_left, mled_right, mled_equal, mbcd_segment, wo_bcd_left, wo_bcd_right, wo_tog_equal, wo_bcd_segment);
 
   //LocalMethod: wait player press buttom
   //module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob);
-  get_player_score gps1(ret_score_p1, ret_score_p2, rm_in_bcd, prob);
+  get_player_score gps1(wo_ret_score_p1, wo_ret_score_p2, min_hex_joy, wo_ans);
 
   //LocalMethod: change state
   //module change_problem_logic(is_active, score_p1, score_p2);
-  change_problem_logic ch1(wtrigger, score_p1, score_p2);
+  change_problem_logic ch1(inw_trigger, wo_ret_score_p1, wo_ret_score_p2);
 endmodule // main
+
+/*---------------------------------------------------------------------*/
+module change_problem_logic(is_active, score_p1, score_p2);
+/*
+  low-level module for compair 2 player score for send toggle data next problem
+  @output [1-bit] 1 if one of person have corrcet answer
+  @input [1bit][active hight] one score of perple or both
+*/
+  output is_active;
+  input score_p1, score_p2;
+  or(is_active, score_p1, score_p2);
+endmodule
+
+module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob);
+/*
+  check player answer with problem answer and get who player give score
+  @output [active hight] 1-bit score_player1 OR score_player2
+  @input [bcd] remote_raw_bcd , problem_bcd_answer
+*/
+  output ret_score_p1;
+  output ret_score_p2;
+  input [7:0]rm_in_bcd;
+  input [3:0]prob;
+  wire [3:0]player_ans;
+  wire [1:0]players;
+
+  reg ret_score_p1, ret_score_p2;
+  remote_chk_ans_ply rcap(player_ans, players, rm_in_bcd);
+
+  always @(1)
+  begin
+    if (player_ans == prob)
+      begin
+          case (players)
+              1:ret_score_p1 = 1'b1;
+              2:ret_score_p2 = 1'b1;
+              default:
+                begin
+                  ret_score_p1 = 1'b0;
+                  ret_score_p2 = 1'b0;
+                end
+          endcase
+      end
+    else
+      begin
+        ret_score_p1 = 1'b0;
+        ret_score_p2 = 1'b0;
+      end
+  end
+endmodule
+
+module remote_chk_ans_ply(anssel, player, in_bcd);
+/*
+  check answer from remote both
+  @retrun choice 1-4 [3:0]and player 1-2 [1:0]
+  @input [active low] raw bcd[7:0] from remote
+*/
+  output [3:0]anssel;
+  output [1:0]player;
+  input [7:0]in_bcd;
+
+  reg [3:0]anssel;
+  reg [1:0]player;
+
+  always @(1)
+    begin
+      case (in_bcd)
+        8'b11111110 :
+        begin
+          anssel = 4;
+          player = 2;
+        end
+        8'b11111101 :
+        begin
+          anssel = 3;
+          player = 2;
+        end
+        8'b11111011 :
+        begin
+          anssel = 2;
+          player = 2;
+        end
+        8'b11110111 :
+        begin
+          anssel = 1;
+          player = 2;
+        end
+        8'b11101111 :
+        begin
+          anssel = 4;
+          player = 1;
+        end
+        8'b11011111 :
+        begin
+          anssel = 3;
+          player = 1;
+        end
+        8'b10111111 :
+        begin
+          anssel = 2;
+          player = 1;
+        end
+        8'b01111111 :
+        begin
+          anssel = 1;
+          player = 1;
+        end
+        default:
+          begin
+            anssel = 0;
+            player = 0;
+          end
+      endcase
+    end
+endmodule
+
+/*---------------------------------------------------------------------*/
+
+/*---------------------------------------------------------------------*/
+module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, bcd_ans, bcd_state);
+  output [3:0]bcd_left, bcd_right;
+  output [3:0]bcd_segment, bcd_ans;
+  output tog_equal;
+  input [3:0]bcd_state;
+
+  reg [3:0]bcd_left, bcd_right;
+  reg [3:0]bcd_segment, bcd_ans;
+  reg tog_equal;
+
+
+  always @ (bcd_state) begin
+    if (bcd_state == 0) begin
+      bcd_left <= 1;
+      bcd_right <= 1;
+      tog_equal <= 0;
+      bcd_segment <= 1;
+      bcd_ans <= 1;
+    end
+    else if (bcd_state == 1) begin
+      bcd_left <= 2;
+      bcd_right <= 2;
+      tog_equal <= 0;
+      bcd_segment <= 2;
+      bcd_ans <= 2;
+    end
+    else if (bcd_state == 2) begin
+      bcd_left <= 3;
+      bcd_right <= 3;
+      tog_equal <= 0;
+      bcd_segment <= 3;
+      bcd_ans <= 3;
+    end
+    else if (bcd_state == 3) begin
+      bcd_left <= 4;
+      bcd_right <= 4;
+      tog_equal <= 0;
+      bcd_segment <= 4;
+      bcd_ans <= 4;
+    end
+    else if (bcd_state == 4) begin
+      bcd_left <= 5;
+      bcd_right <= 5;
+      tog_equal <= 0;
+      bcd_segment <= 5;
+      bcd_ans <= 3;
+    end
+    else if (bcd_state == 5) begin
+      bcd_left <= 4;
+      bcd_right <= 4;
+      tog_equal <= 0;
+      bcd_segment <= 4;
+      bcd_ans <= 2;
+    end
+    else if (bcd_state == 6) begin
+      bcd_left <= 3;
+      bcd_right <= 3;
+      tog_equal <= 0;
+      bcd_segment <= 3;
+      bcd_ans <= 1;
+    end
+    else if (bcd_state == 7) begin
+      bcd_left <= 2;
+      bcd_right <= 2;
+      tog_equal <= 0;
+      bcd_segment <= 2;
+      bcd_ans <= 2;
+    end
+    else if (bcd_state == 8) begin
+      bcd_left <= 1;
+      bcd_right <= 1;
+      tog_equal <= 0;
+      bcd_segment <= 1;
+      bcd_ans <= 3;
+    end
+    else if (bcd_state == 9) begin
+      bcd_left <= 1;
+      bcd_right <= 1;
+      tog_equal <= 0;
+      bcd_segment <= 0;
+      bcd_ans <= 4;
+    end
+    else if (bcd_state == 10) begin
+      bcd_left <= 1;
+      bcd_right <= 1;
+      tog_equal <= 0;
+      bcd_segment <= 0;
+      bcd_ans <= 3;
+    end
+    else begin
+      bcd_left <= 5;
+      bcd_right <= 5;
+      tog_equal <= 5;
+      bcd_segment <= 9;
+      bcd_ans <= 0;
+    end
+  end
+endmodule // question_inti
+
+module question_show (led_left, led_right, led_equal, bcd_segment, in_left, in_right, in_equal, in_segment);
+/*
+  low-level module to show 5 digits led-problem and equal and segment
+  @input [bcd]data and [active hight]in_equal
+  @output [active hight]all led
+  @delay xxx ns
+  @
+*/
+  output [4:0]led_left, led_right;
+  output [3:0]bcd_segment;
+  output led_equal;
+  input [3:0]in_left, in_right, in_segment;
+  input in_equal;
+
+  reg [4:0]led_left, led_right;
+  reg [3:0]bcd_segment;
+  reg led_equal;
+
+  always @ ( in_left ) begin
+    case (in_left)
+      0: led_left <= 5'b00000;
+      1: led_left <= 5'b00001;
+      2: led_left <= 5'b00011;
+      3: led_left <= 5'b00111;
+      4: led_left <= 5'b01111;
+      5: led_left <= 5'b11111;
+      default: led_left <= 5'b00000;
+    endcase
+  end
+
+  always @ (in_right) begin
+    case (in_right)
+      0: led_right <= 5'b00000;
+      1: led_right <= 5'b00001;
+      2: led_right <= 5'b00011;
+      3: led_right <= 5'b00111;
+      4: led_right <= 5'b01111;
+      5: led_right <= 5'b11111;
+      default: led_right <= 5'b00000;
+    endcase
+  end
+
+  always @ (1) begin
+    bcd_segment <= in_segment;
+    led_equal <= in_equal;
+  end
+
+endmodule // question_show
+
+module score_count_show (led_player, trigger);
+/*
+  low-level module to show 5 digits led-score
+  @output [5bit][active hight] led array
+  @input trigger
+  @design this function for Right-hand player if you want
+    to use LH player you should invert-side of LED ex
+    12345 -> 54321 it's eazy ways
+  @delay 7.2ns [091259 0011]
+*/
+  input trigger;
+  output [4:0]led_player;
+  reg [4:0]led_player;
+  wire [3:0]bcd;
+
+  //counter module
+  click_count_up clk_led_p1(bcd, trigger);
+
+  //Working always
+  always @ (1) begin
+    case (bcd)
+      0: led_player <= 5'b00000;
+      1: led_player <= 5'b00001;
+      2: led_player <= 5'b00011;
+      3: led_player <= 5'b00111;
+      4: led_player <= 5'b01111;
+      5: led_player <= 5'b11111;
+      default: led_player <= 5'b00000;
+    endcase
+  end
+endmodule
+
+module click_count_up(bcd, trigger);
+  output [3:0]bcd;
+  input trigger;
+  reg [3:0]bcd;
+
+  initial begin
+    bcd <= 0;
+  end
+
+  always @ ( negedge trigger ) begin
+    case (bcd)
+      0: bcd <= 1;
+      1: bcd <= 2;
+      2: bcd <= 3;
+      3: bcd <= 4;
+      4: bcd <= 5;
+      5: bcd <= 6;
+      6: bcd <= 7;
+      7: bcd <= 8;
+      8: bcd <= 9;
+      9: bcd <= 10;
+      default: bcd <= 0;
+    endcase
+  end
+endmodule
+
+/*---------------------------------------------------------------------*/
