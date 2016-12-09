@@ -1,4 +1,4 @@
-module mainTest (vcc,gnd,left,right,segBcd,scoreLeft,scoreRight,joyInL,joyInR);
+module mainv1 (vcc,gnd,left,right,segBcd,scoreLeft,scoreRight,joyInL,joyInR);
   output vcc;
   reg vcc;
   output gnd;
@@ -183,71 +183,71 @@ module initialize (outL,outR,ans,segBcd,state); //initial question
         if(state ==0)begin
             outL = 1;
             outR = 1;
-            segBcd = 0;
+            segBcd = 7;
             ans = 1;
            end
         else if(state ==1) begin
             outL = 2;
             outR = 2;
-            segBcd = 2;
+            segBcd = 5;
             ans = 2;
             end
           else if(state ==2)begin
                 outL = 3;
                 outR = 3;
-                segBcd = 3;
-                ans = 3;
+                segBcd = 7;
+                ans = 4;
                end
         else if(state ==3) begin
                 outL = 4;
                 outR = 4;
-                segBcd = 4;
-                ans = 4;
+                segBcd = 6;
+                ans = 2;
                 end
 
         else if(state ==4)begin
                   outL = 5;
                   outR = 5;
                   segBcd = 5;
-                  ans = 3;
+                  ans = 1;
                  end
 
       else if(state ==5) begin
                      outL = 4;
                      outR = 4;
-                     segBcd = 6;
+                     segBcd = 4;
                      ans = 2;
                      end
       else if(state ==6) begin
                    outL = 3;
                   outR = 3;
-                 segBcd = 7;
-                   ans = 1;
+                 segBcd = 3;
+                   ans = 4;
                   end
       else if(state ==7) begin
                  outL = 2;
                      outR = 2;
-                 segBcd = 8;
+                 segBcd = 2;
                        ans = 2;
                        end
           else if(state ==8) begin
                     outL = 2;
                  outR = 3;
-                   segBcd = 9;
-                   ans = 3;
+                   segBcd = 1;
+                   ans = 1;
                    end
 
 
           else if(state ==9)begin
                  outL = 0;
                 outR = 1;
-                segBcd = 1;
-                   ans = 4;
+                segBcd = 2;
+                   ans = 2;
                 end
           else if(state ==10)begin
                 outL = 5;
                outR = 5;
-               segBcd = 0;
+               segBcd = 9;
                   ans = 0;
                end
 
