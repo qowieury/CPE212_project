@@ -1,72 +1,99 @@
-module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, ans, state);
-  output [2:0]bcd_left, bcd_right, bcd_segment, ans;
+module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, bcd_ans, bcd_state);
+  output [3:0]bcd_left, bcd_right;
+  output [3:0]bcd_segment, bcd_ans;
   output tog_equal;
-  input [2:0]state;
+  input [3:0]bcd_state;
 
-  reg [2:0]bcd_left, bcd_right, bcd_segment, ans;
+  reg [3:0]bcd_left, bcd_right;
+  reg [3:0]bcd_segment, bcd_ans;
   reg tog_equal;
 
 
-  always @ (1) begin
-    case (state)
-      0:
-        begin
-          bcd_left = 1;
-          bcd_right = 1;
-          tog_equal = 0;
-          bcd_segment = 0;
-          ans = 1;
-        end
-      1:
-        begin
-          bcd_left = 2;
-          bcd_right = 2;
-          tog_equal = 0;
-          bcd_segment = 3;
-          ans = 2;
-        end
-      2:
-        begin
-          bcd_left = 3;
-          bcd_right = 3;
-          tog_equal = 0;
-          bcd_segment = 3;
-          ans = 3;
-        end
-      3:
-        begin
-          bcd_left = 4;
-          bcd_right = 4;
-          tog_equal = 0;
-          bcd_segment = 4;
-          ans = 4;
-        end
-      4:
-        begin
-          bcd_left = 5;
-          bcd_right = 5;
-          tog_equal = 0;
-          bcd_segment = 5;
-          ans = 1;
-        end
-      5:
-        begin
-          bcd_left = 1;
-          bcd_right = 1;
-          tog_equal = 0;
-          bcd_segment = 1;
-          ans = 2;
-        end
-
-      default:
-        begin
-          bcd_left <= 0;
-          bcd_right <= 0;
-          tog_ans = 0;
-          bcd_segment = 0;
-          ans = 1;
-        end
-    endcase
+  always @ (bcd_state) begin
+    if (bcd_state == 0) begin
+      bcd_left <= 1;
+      bcd_right <= 1;
+      tog_equal <= 0;
+      bcd_segment <= 1;
+      bcd_ans <= 1;
+    end
+    else if (bcd_state == 1) begin
+      bcd_left <= 2;
+      bcd_right <= 2;
+      tog_equal <= 0;
+      bcd_segment <= 2;
+      bcd_ans <= 2;
+    end
+    else if (bcd_state == 2) begin
+      bcd_left <= 3;
+      bcd_right <= 3;
+      tog_equal <= 0;
+      bcd_segment <= 3;
+      bcd_ans <= 3;
+    end
+    else if (bcd_state == 3) begin
+      bcd_left <= 4;
+      bcd_right <= 4;
+      tog_equal <= 0;
+      bcd_segment <= 4;
+      bcd_ans <= 4;
+    end
+    else if (bcd_state == 4) begin
+      bcd_left <= 5;
+      bcd_right <= 5;
+      tog_equal <= 0;
+      bcd_segment <= 5;
+      bcd_ans <= 3;
+    end
+    else if (bcd_state == 5) begin
+      bcd_left <= 4;
+      bcd_right <= 4;
+      tog_equal <= 0;
+      bcd_segment <= 4;
+      bcd_ans <= 2;
+    end
+    else if (bcd_state == 6) begin
+      bcd_left <= 3;
+      bcd_right <= 3;
+      tog_equal <= 0;
+      bcd_segment <= 3;
+      bcd_ans <= 1;
+    end
+    else if (bcd_state == 7) begin
+      bcd_left <= 2;
+      bcd_right <= 2;
+      tog_equal <= 0;
+      bcd_segment <= 2;
+      bcd_ans <= 2;
+    end
+    else if (bcd_state == 8) begin
+      bcd_left <= 1;
+      bcd_right <= 1;
+      tog_equal <= 0;
+      bcd_segment <= 1;
+      bcd_ans <= 3;
+    end
+    else if (bcd_state == 9) begin
+      bcd_left <= 1;
+      bcd_right <= 1;
+      tog_equal <= 0;
+      bcd_segment <= 0;
+      bcd_ans <= 4;
+    end
+    else if (bcd_state == 10) begin
+      bcd_left <= 1;
+      bcd_right <= 1;
+      tog_equal <= 0;
+      bcd_segment <= 0;
+      bcd_ans <= 3;
+    end
+    else begin
+      bcd_left <= 5;
+      bcd_right <= 5;
+      tog_equal <= 5;
+      bcd_segment <= 9;
+      bcd_ans <= 0;
+    end
   end
 endmodule // question_inti
 
@@ -79,16 +106,16 @@ module question_show (led_left, led_right, led_equal, bcd_segment, in_left, in_r
   @
 */
   output [4:0]led_left, led_right;
-  output [2:0]bcd_segment;
+  output [3:0]bcd_segment;
   output led_equal;
-  input [2:0]in_left, in_right, in_segment;
+  input [3:0]in_left, in_right, in_segment;
   input in_equal;
 
   reg [4:0]led_left, led_right;
-  reg [2:0]bcd_segment;
+  reg [3:0]bcd_segment;
   reg led_equal;
 
-  always @ ( 1 ) begin
+  always @ ( in_left ) begin
     case (in_left)
       0: led_left <= 5'b00000;
       1: led_left <= 5'b00001;
@@ -98,7 +125,9 @@ module question_show (led_left, led_right, led_equal, bcd_segment, in_left, in_r
       5: led_left <= 5'b11111;
       default: led_left <= 5'b00000;
     endcase
+  end
 
+  always @ (in_right) begin
     case (in_right)
       0: led_right <= 5'b00000;
       1: led_right <= 5'b00001;
@@ -108,14 +137,16 @@ module question_show (led_left, led_right, led_equal, bcd_segment, in_left, in_r
       5: led_right <= 5'b11111;
       default: led_right <= 5'b00000;
     endcase
+  end
 
+  always @ (1) begin
     bcd_segment <= in_segment;
     led_equal <= in_equal;
   end
 
 endmodule // question_show
 
-module score_show (led_player, trigger);
+module score_count_show (led_player, trigger);
 /*
   low-level module to show 5 digits led-score
   @output [5bit][active hight] led array
@@ -128,7 +159,7 @@ module score_show (led_player, trigger);
   input trigger;
   output [4:0]led_player;
   reg [4:0]led_player;
-  wire [2:0]bcd;
+  wire [3:0]bcd;
 
   //counter module
   click_count_up clk_led_p1(bcd, trigger);
@@ -148,18 +179,27 @@ module score_show (led_player, trigger);
 endmodule
 
 module click_count_up(bcd, trigger);
-  output [2:0]bcd;
+  output [3:0]bcd;
   input trigger;
-  reg [2:0]bcd;
+  reg [3:0]bcd;
 
   initial begin
     bcd <= 0;
   end
 
   always @ ( negedge trigger ) begin
-    if(bcd >= 7)
-      bcd <= 0;
-    else
-      bcd <= bcd+1;
+    case (bcd)
+      0: bcd <= 1;
+      1: bcd <= 2;
+      2: bcd <= 3;
+      3: bcd <= 4;
+      4: bcd <= 5;
+      5: bcd <= 6;
+      6: bcd <= 7;
+      7: bcd <= 8;
+      8: bcd <= 9;
+      9: bcd <= 10;
+      default: bcd <= 0;
+    endcase
   end
 endmodule

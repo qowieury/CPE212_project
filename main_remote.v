@@ -18,8 +18,8 @@ module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob);
   output ret_score_p1;
   output ret_score_p2;
   input [7:0]rm_in_bcd;
-  input [2:0]prob;
-  wire [2:0]player_ans;
+  input [3:0]prob;
+  wire [3:0]player_ans;
   wire [1:0]players;
 
   reg ret_score_p1, ret_score_p2;
@@ -53,11 +53,11 @@ module remote_chk_ans_ply(anssel, player, in_bcd);
   @retrun choice 1-4 [3:0]and player 1-2 [1:0]
   @input [active low] raw bcd[7:0] from remote
 */
-  output [2:0]anssel;
+  output [3:0]anssel;
   output [1:0]player;
   input [7:0]in_bcd;
 
-  reg [2:0]anssel;
+  reg [3:0]anssel;
   reg [1:0]player;
 
   always @(1)
