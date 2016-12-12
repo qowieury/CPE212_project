@@ -7,9 +7,10 @@ module change_problem_logic(is_active, score_p1, score_p2);
   output is_active;
   input score_p1, score_p2;
   or(is_active, score_p1, score_p2);
+
 endmodule
 
-module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob);
+module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob, toggle_beep);
 /*
   check player answer with problem answer and get who player give score
   @output [active hight] 1-bit score_player1 OR score_player2
@@ -19,6 +20,7 @@ module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob);
   output ret_score_p2;
   input [7:0]rm_in_bcd;
   input [3:0]prob;
+  input toggle_beep;
   wire [3:0]player_ans;
   wire [1:0]players;
 
@@ -27,7 +29,7 @@ module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob);
 
   always @(1)
   begin
-    if (player_ans == prob)
+    if (player_ans == prob && ~toggle_beep)
       begin
           case (players)
               1:ret_score_p1 = 1'b1;
@@ -47,7 +49,7 @@ module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob);
   end
 endmodule
 
-module remote_chk_ans_ply(anssel, player, in_bcd);
+module remote_chk_ans_ply(anssel, player, in_hex);
 /*
   check answer from remote both
   @retrun choice 1-4 [3:0]and player 1-2 [1:0]
@@ -55,14 +57,14 @@ module remote_chk_ans_ply(anssel, player, in_bcd);
 */
   output [3:0]anssel;
   output [1:0]player;
-  input [7:0]in_bcd;
+  input [7:0]in_hex;
 
   reg [3:0]anssel;
   reg [1:0]player;
 
   always @(1)
     begin
-      case (in_bcd)
+      case (in_hex)
         8'b11111110 :
         begin
           anssel = 4;

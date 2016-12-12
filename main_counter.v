@@ -20,7 +20,7 @@ module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, bcd_ans, bcd_
     else if (bcd_state == 1) begin
       bcd_left <= 2;
       bcd_right <= 2;
-      tog_equal <= 0;
+      tog_equal <= 1;
       bcd_segment <= 2;
       bcd_ans <= 2;
     end
@@ -34,7 +34,7 @@ module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, bcd_ans, bcd_
     else if (bcd_state == 3) begin
       bcd_left <= 4;
       bcd_right <= 4;
-      tog_equal <= 0;
+      tog_equal <= 1;
       bcd_segment <= 4;
       bcd_ans <= 4;
     end
@@ -48,7 +48,7 @@ module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, bcd_ans, bcd_
     else if (bcd_state == 5) begin
       bcd_left <= 4;
       bcd_right <= 4;
-      tog_equal <= 0;
+      tog_equal <= 1;
       bcd_segment <= 4;
       bcd_ans <= 2;
     end
@@ -62,7 +62,7 @@ module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, bcd_ans, bcd_
     else if (bcd_state == 7) begin
       bcd_left <= 2;
       bcd_right <= 2;
-      tog_equal <= 0;
+      tog_equal <= 1;
       bcd_segment <= 2;
       bcd_ans <= 2;
     end
@@ -76,28 +76,21 @@ module question_inti (bcd_left, bcd_right, tog_equal, bcd_segment, bcd_ans, bcd_
     else if (bcd_state == 9) begin
       bcd_left <= 1;
       bcd_right <= 1;
-      tog_equal <= 0;
+      tog_equal <= 1;
       bcd_segment <= 0;
       bcd_ans <= 4;
     end
-    else if (bcd_state == 10) begin
-      bcd_left <= 1;
-      bcd_right <= 1;
-      tog_equal <= 0;
-      bcd_segment <= 0;
-      bcd_ans <= 3;
-    end
     else begin
-      bcd_left <= 5;
-      bcd_right <= 5;
-      tog_equal <= 5;
-      bcd_segment <= 9;
-      bcd_ans <= 0;
+      bcd_left <= 10;
+      bcd_right <= 10;
+      tog_equal <= 10;
+      bcd_segment <= 0;
+      bcd_ans <= 10;
     end
   end
 endmodule // question_inti
 
-module question_show (led_left, led_right, led_equal, bcd_segment, in_left, in_right, in_equal, in_segment);
+module question_show (toggle_beep, led_left, led_right, led_equal, bcd_segment, in_left, in_right, in_equal, in_segment);
 /*
   low-level module to show 5 digits led-problem and equal and segment
   @input [bcd]data and [active hight]in_equal
@@ -107,36 +100,44 @@ module question_show (led_left, led_right, led_equal, bcd_segment, in_left, in_r
 */
   output [4:0]led_left, led_right;
   output [3:0]bcd_segment;
-  output led_equal;
+  output led_equal, toggle_beep;
   input [3:0]in_left, in_right, in_segment;
   input in_equal;
 
   reg [4:0]led_left, led_right;
   reg [3:0]bcd_segment;
-  reg led_equal;
+  reg led_equal, toggle_beep;
 
-  always @ ( in_left ) begin
-    case (in_left)
-      0: led_left <= 5'b00000;
-      1: led_left <= 5'b00001;
-      2: led_left <= 5'b00011;
-      3: led_left <= 5'b00111;
-      4: led_left <= 5'b01111;
-      5: led_left <= 5'b11111;
-      default: led_left <= 5'b00000;
-    endcase
-  end
-
-  always @ (in_right) begin
-    case (in_right)
-      0: led_right <= 5'b00000;
-      1: led_right <= 5'b00001;
-      2: led_right <= 5'b00011;
-      3: led_right <= 5'b00111;
-      4: led_right <= 5'b01111;
-      5: led_right <= 5'b11111;
-      default: led_right <= 5'b00000;
-    endcase
+  always @ (1)
+  begin
+    if (in_left >= 6 || in_right >= 6)
+      begin
+        toggle_beep = 1;
+      end
+    else
+      begin
+        toggle_beep = 0;
+        case (in_left)
+          0: led_left <= 5'b00000;
+          1: led_left <= 5'b00001;
+          2: led_left <= 5'b00011;
+          3: led_left <= 5'b00111;
+          4: led_left <= 5'b01111;
+          5: led_left <= 5'b11111;
+          10: led_left <= 5'b10101; //State test
+          default: led_left <= 5'b01010;
+        endcase
+        case (in_right)
+          0: led_right <= 5'b00000;
+          1: led_right <= 5'b00001;
+          2: led_right <= 5'b00011;
+          3: led_right <= 5'b00111;
+          4: led_right <= 5'b01111;
+          5: led_right <= 5'b11111;
+          10: led_right <= 5'b10101; //State test
+          default: led_right <= 5'b01010;
+        endcase
+    end
   end
 
   always @ (1) begin
@@ -187,7 +188,7 @@ module click_count_up(bcd, trigger);
     bcd <= 0;
   end
 
-  always @ ( negedge trigger ) begin
+  always @ ( posedge trigger ) begin
     case (bcd)
       0: bcd <= 1;
       1: bcd <= 2;
@@ -198,7 +199,6 @@ module click_count_up(bcd, trigger);
       6: bcd <= 7;
       7: bcd <= 8;
       8: bcd <= 9;
-      9: bcd <= 10;
       default: bcd <= 0;
     endcase
   end
