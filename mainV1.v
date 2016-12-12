@@ -42,6 +42,7 @@ module mainv1 (vcc,gnd,left,right,segBcd,scoreLeft,scoreRight,joyInL,joyInR);
   always @ ( 1 ) begin
     vcc =1;
     gnd =0;
+
   end
 
 
@@ -95,6 +96,8 @@ module ansCheck (scoreLOut,scoreROut,trigScoreL,trigScoreR,bcdJoyL,bcdJoyR,toggl
   input toggleL,toggleR;
 
   reg trigScoreL,trigScoreR;
+  wire [3:0]bcdL;
+  wire [3:0]bcdR;
 
   /*always @ ( 1 ) begin
     scoreL = 2;
@@ -102,7 +105,10 @@ module ansCheck (scoreLOut,scoreROut,trigScoreL,trigScoreR,bcdJoyL,bcdJoyR,toggl
   end
 */
   always @ (toggleL) begin
-    if(bcdJoyL == ans )begin
+    if(bcdL == 5 || bcdR == 5) begin
+      trigScoreL =0;
+    end
+    else if(bcdJoyL == ans )begin
       trigScoreL =1;
 
       end
@@ -110,18 +116,22 @@ module ansCheck (scoreLOut,scoreROut,trigScoreL,trigScoreR,bcdJoyL,bcdJoyR,toggl
   end
 
   always @ (toggleR) begin
-    if(bcdJoyR == ans ) begin
+  if(bcdL == 5 || bcdR == 5) begin
+    trigScoreR =0;
+  end
+  else if(bcdJoyR == ans ) begin
       trigScoreR =1;
 
       end
     else trigScoreR =0;
 
   end
-  wire [3:0]bcdL;
-  wire [3:0]bcdR;
 
-  clickcountup cL(bcdL,trigScoreL);
-  clickcountup cR(bcdR,trigScoreR);
+
+
+
+  scorecount cL(bcdL,trigScoreL);
+  scorecount cR(bcdR,trigScoreR);
 
   scoreDisplay sd(scoreLOut,scoreROut,bcdL,bcdR);
     /*  always @ (toggleR) begin
@@ -134,13 +144,37 @@ module ansCheck (scoreLOut,scoreROut,trigScoreL,trigScoreR,bcdJoyL,bcdJoyR,toggl
 
 endmodule //
 
+module scorecount (bcd,trigger);
+  input trigger;
+  output [3:0]bcd;
+  reg [3:0]bcd;
+
+  always @( posedge trigger)
+  begin
+
+    case(bcd)
+      0 : bcd = 1;
+      1 : bcd = 2;
+      2 : bcd = 3;
+      3 : bcd = 4;
+      4 : bcd = 5;
+      5 : bcd = 6;
+
+      default : bcd = 0;
+    endcase
+
+  end
+
+
+endmodule
+
 
 module joy (bcd,in);
   output [2:0]bcd;
   input [3:0]in;
   reg [2:0]bcd;
 
-  always @ ( in ) begin
+  always @ ( 1 ) begin
     case (in)
       4'b1110:begin
         bcd = 1;
@@ -384,7 +418,7 @@ module clickcountup(bcd,trigger); //count up 0 - 5
 	reg [3:0]bcd;
 
 
-	always @(negedge trigger)
+	always @(posedge trigger)
 	begin
   /*
     if(bcd == 11)
