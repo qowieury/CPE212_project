@@ -1,3 +1,4 @@
+
 module change_problem_logic(is_active, score_p1, score_p2);
 /*
   low-level module for compair 2 player score for send toggle data next problem
@@ -29,7 +30,7 @@ module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob, toggle_beep
 
   always @(1)
   begin
-    if (player_ans == prob && ~toggle_beep)
+    if (player_ans == prob && !toggle_beep)
       begin
           case (players)
               1:ret_score_p1 = 1'b1;
