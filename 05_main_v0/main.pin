@@ -1,0 +1,115 @@
+-- Copyright (C) 1988-2002 Altera Corporation
+-- Any megafunction design, and related net list (encrypted or decrypted),
+-- support information, device programming or simulation file, and any other
+-- associated documentation or information provided by Altera or a partner
+-- under Altera's Megafunction Partnership Program may be used only to
+-- program PLD devices (but not masked PLD devices) from Altera.  Any other
+-- use of such megafunction design, net list, support information, device
+-- programming or simulation file, or any other related documentation or
+-- information is prohibited for any other purpose, including, but not
+-- limited to modification, reverse engineering, de-compiling, or use with
+-- any other silicon devices, unless such use is explicitly licensed under
+-- a separate agreement with Altera or a megafunction partner.  Title to
+-- the intellectual property, including patents, copyrights, trademarks,
+-- trade secrets, or maskworks, embodied in any such megafunction design,
+-- net list, support information, device programming or simulation file, or
+-- any other related documentation or information provided by Altera or a
+-- megafunction partner, remains with Altera, the megafunction partner, or
+-- their respective licensors.  No other licenses, including any licenses
+-- needed under any third party's intellectual property, are provided herein.
+
+
+
+N.C. = No Connect. This pin has no internal connection to the device.
+VCCINT = Dedicated power pin, which MUST be connected to VCC (5.0 volts).
+VCCIO = Dedicated power pin, which MUST be connected to VCC (5.0 volts).
+GND = Dedicated ground pin or unused dedicated input, which MUST be connected to GND.
+RESERVED = Unused I/O pin, which MUST be left unconnected.
+
+----------------------------------------------------------------------------
+
+CHIP "main" ASSIGNED TO AN EPM7128SLC84-15
+GND                              : 1
+GND                              : 2
+VCCINT                           : 3
+mled_left0                       : 4
+mled_left1                       : 5
+mled_left2                       : 6
+GND                              : 7
+mled_left3                       : 8
+mled_left4                       : 9
+mtoggle_beep                     : 10
+RESERVED                         : 11
+RESERVED                         : 12
+VCCIO                            : 13
+TDI                              : 14
+mled_score_p14                   : 15
+RESERVED                         : 16
+mled_score_p13                   : 17
+mled_score_p12                   : 18
+GND                              : 19
+mled_score_p11                   : 20
+mled_score_p10                   : 21
+mled_equal                       : 22
+TMS                              : 23
+RESERVED                         : 24
+RESERVED                         : 25
+VCCIO                            : 26
+RESERVED                         : 27
+RESERVED                         : 28
+RESERVED                         : 29
+RESERVED                         : 30
+RESERVED                         : 31
+GND                              : 32
+mbcd_segment0                    : 33
+mbcd_segment1                    : 34
+mbcd_segment2                    : 35
+mbcd_segment3                    : 36
+RESERVED                         : 37
+VCCIO                            : 38
+RESERVED                         : 39
+RESERVED                         : 40
+RESERVED                         : 41
+GND                              : 42
+VCCINT                           : 43
+RESERVED                         : 44
+RESERVED                         : 45
+RESERVED                         : 46
+GND                              : 47
+RESERVED                         : 48
+RESERVED                         : 49
+RESERVED                         : 50
+RESERVED                         : 51
+RESERVED                         : 52
+VCCIO                            : 53
+min_hex_joy3                     : 54
+min_hex_joy2                     : 55
+min_hex_joy1                     : 56
+min_hex_joy0                     : 57
+min_hex_joy7                     : 58
+GND                              : 59
+min_hex_joy6                     : 60
+min_hex_joy5                     : 61
+TCK                              : 62
+min_hex_joy4                     : 63
+mled_score_p24                   : 64
+mled_score_p20                   : 65
+VCCIO                            : 66
+mled_score_p21                   : 67
+mled_score_p22                   : 68
+mled_score_p23                   : 69
+RESERVED                         : 70
+TDO                              : 71
+GND                              : 72
+gnd                              : 73
+vcc                              : 74
+mled_right4                      : 75
+mled_right3                      : 76
+mled_right2                      : 77
+VCCIO                            : 78
+mled_right1                      : 79
+mled_right0                      : 80
+RESERVED                         : 81
+GND                              : 82
+GND                              : 83
+GND                              : 84

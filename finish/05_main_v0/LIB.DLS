@@ -1,0 +1,14 @@
+DLSL
+1
+change_problem_logic.VerilogView U6536276.DLS
+click_count_up.VerilogView U2868219.DLS
+get_player_score.VerilogView U5173368.DLS
+main.VerilogView U1104537.DLS
+question_inti.VerilogView U3983726.DLS
+question_show.VerilogView U7537880.DLS
+remote_chk_ans_ply.VerilogView U5927898.DLS
+score_bcd_translate.VerilogView U6602083.DLS
+score_count_show.VerilogView U2849078.DLS
+set_player_score.VerilogView U5228712.DLS
+show_aut_segment.VerilogView U0157664.DLS
+show_player_score.VerilogView U8690362.DLS
