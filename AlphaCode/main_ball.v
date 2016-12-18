@@ -47,6 +47,7 @@ module main (vcc, gnd, mled_left, mtoggle_beep, mled_right, mled_equal, mbcd_seg
   //module set_player_score(toggle_beep, led_score_p1, led_score_p2, tog_score_p1, tog_score_p2);
   set_player_score sps1(wo_toggle_beep, mled_score_p1, mled_score_p2, wo_ret_score_p1, wo_ret_score_p2);
 
+  //GlobalMethod: Output Buzzer signal with out reg variable type
   and(mtoggle_beep, wo_toggle_beep, wo_toggle_beep);
 
   //LocalMethod: change state
@@ -92,6 +93,7 @@ module get_player_score(ret_score_p1, ret_score_p2, rm_in_bcd, prob, toggle_beep
     if (player_ans == prob && !toggle_beep)
       begin
           case (players)
+
               1:ret_score_p1 = 1'b1;
               2:ret_score_p2 = 1'b1;
               default:
@@ -388,4 +390,31 @@ module set_player_score(toggle_beep, led_score_p1, led_score_p2, tog_score_p1, t
     end
   end
 
+endmodule
+
+module select_menu (bcd_menu_item, in_bcd_card, in_is_win);
+  output [3:0]bcd_menu_item;
+  input [1:0]in_bcd_card;
+  input in_is_win;
+
+  reg [3:0]bcd_menu_item;
+  wire is_lock;
+  D_FF dff1(is_lock, 1'b1, in_is_win, 1'b0);
+  always @ (is_lock ) begin
+    if (is_lock) begin
+
+    end
+  end
+
+endmodule
+
+module D_FF(qd, d, clk, reset);
+	output qd;
+	input d, clk,reset;
+	reg qd;
+	always @(posedge reset or negedge clk)
+		if(reset)
+			qd <= 1'b0;
+		else
+			qd <= d;
 endmodule
